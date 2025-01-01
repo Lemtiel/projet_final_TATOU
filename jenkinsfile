@@ -1,0 +1,26 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Build') {
+            steps {
+                echo 'Building the Docker image...'
+                sh 'docker build -t ic-webapp:latest .'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                echo 'Running tests...'
+                sh 'docker run --rm ic-webapp:latest python -m unittest discover'
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                echo 'Deploying with Ansible...'
+                sh 'ansible-playbook -i inventory deploy.yml'
+            }
+        }
+    }
+}
